@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Problème moteur PureTech – Peugeot 2008</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0f2a4a;
+    --emerald: #1a6b4a;
+    --emerald-light: #e8f5ef;
+    --amber: #e8a020;
+    --amber-light: #fff8ed;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --gray-100: #f5f5f3;
+    --gray-200: #e8e8e4;
+    --gray-500: #888;
+    --text: #1a1a1a;
+    --text-muted: #666;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-100);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .page-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .logo-badge {
+    background: var(--navy);
+    color: white;
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+  }
+
+  .top-bar-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .alert-banner {
+    background: var(--amber-light);
+    border: 1px solid var(--amber);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .alert-icon { font-size: 18px; flex-shrink: 0; }
+  .alert-text { font-size: 13.5px; line-height: 1.6; color: #5a3c00; }
+  .alert-text strong { font-weight: 600; }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-header .icon { font-size: 16px; }
+  .card-header h2 { font-size: 14px; font-weight: 600; letter-spacing: 0.02em; }
+
+  .card-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--emerald);
+  }
+
+  .field textarea { min-height: 80px; resize: vertical; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .pill {
+    padding: 7px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 30px;
+    font-size: 13px;
+    cursor: pointer;
+    background: white;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .pill:hover { border-color: var(--emerald); color: var(--emerald); }
+  .pill.selected { background: var(--emerald); border-color: var(--emerald); color: white; font-weight: 500; }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 480px) { .row-2 { grid-template-columns: 1fr; } }
+
+  .hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+  .submit-section { text-align: center; padding-top: 0.5rem; }
+
+  .submit-btn {
+    background: var(--emerald);
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+  }
+
+  .submit-btn:hover { background: #14563b; }
+  .submit-btn:active { transform: scale(0.98); }
+
+  .result-box {
+    display: none;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 14px;
+    padding: 24px;
+    margin-top: 1.5rem;
+  }
+
+  .result-box h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-100);
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .result-row:last-child { border-bottom: none; }
+  .result-key { color: var(--text-muted); flex-shrink: 0; min-width: 180px; font-weight: 500; }
+  .result-val { color: var(--text); text-align: right; font-weight: 600; }
+
+  .copy-btn {
+    margin-top: 16px;
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid var(--navy);
+    border-radius: 8px;
+    background: white;
+    color: var(--navy);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { background: var(--navy); color: white; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2rem;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="top-bar">
+    <div class="logo-badge">IA&C</div>
+    <div class="top-bar-label">Dossier PureTech – Peugeot 2008</div>
+  </div>
+
+  <div class="alert-banner">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <strong>Défaut moteur PureTech connu.</strong> Réponds à ces questions pour savoir si tu peux obtenir une prise en charge ou engager un recours contre Stellantis. Tes réponses sont confidentielles.
+    </div>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">🚗</span>
+      <h2>La voiture</h2>
+    </div>
+    <div class="card-body">
+      <div class="row-2">
+        <div class="field">
+          <label>Année</label>
+          <select id="annee">
+            <option value="">— Sélectionne —</option>
+            <option>2013</option><option>2014</option><option>2015</option>
+            <option>2016</option><option>2017</option><option>2018</option>
+            <option>2019</option><option>2020</option><option>2021</option>
+            <option>2022</option><option>2023</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Kilométrage</label>
+          <input type="number" id="km" placeholder="Ex : 85 000">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Motorisation</label>
+        <div class="pills" id="moteur">
+          <div class="pill" data-val="1.2 PureTech 82ch">1.2 PureTech 82ch</div>
+          <div class="pill" data-val="1.2 PureTech 110ch">1.2 PureTech 110ch</div>
+          <div class="pill" data-val="1.2 PureTech 130ch">1.2 PureTech 130ch</div>
+          <div class="pill" data-val="Je sais pas">Je sais pas</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Achetée neuve ou d'occasion ?</label>
+        <div class="pills" id="achat">
+          <div class="pill" data-val="Neuve chez Peugeot">Neuve chez Peugeot</div>
+          <div class="pill" data-val="D'occasion chez un particulier">Occasion particulier</div>
+          <div class="pill" data-val="D'occasion chez un concessionnaire">Occasion concessionnaire</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">🔧</span>
+      <h2>La panne</h2>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Symptômes observés</label>
+        <div class="pills" id="symptomes">
+          <div class="pill" data-val="Moteur cassé / HS">Moteur cassé / HS</div>
+          <div class="pill" data-val="Voyant allumé">Voyant allumé</div>
+          <div class="pill" data-val="Perte de puissance">Perte de puissance</div>
+          <div class="pill" data-val="Bruit moteur anormal">Bruit moteur</div>
+          <div class="pill" data-val="Ne démarre plus">Ne démarre plus</div>
+          <div class="pill" data-val="Fumée">Fumée</div>
+        </div>
+        <p class="hint">Plusieurs réponses possibles</p>
+      </div>
+
+      <div class="field">
+        <label>Courroie de distribution en cause ?</label>
+        <div class="pills" id="courroie">
+          <div class="pill" data-val="Oui, confirmé par le garage">Oui, confirmé</div>
+          <div class="pill" data-val="Pas encore diagnostiqué">Pas encore diagnostiqué</div>
+          <div class="pill" data-val="Autre cause évoquée">Autre cause évoquée</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Devis reçu ?</label>
+        <input type="text" id="devis" placeholder="Ex : 3 500 € — ou 'pas encore'">
+      </div>
+
+      <div class="field">
+        <label>Nom du garage</label>
+        <input type="text" id="garage" placeholder="Ex : Peugeot Aix-en-Provence">
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">📋</span>
+      <h2>Garantie & entretien</h2>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Encore sous garantie constructeur ?</label>
+        <div class="pills" id="garantie">
+          <div class="pill" data-val="Oui">Oui</div>
+          <div class="pill" data-val="Non">Non</div>
+          <div class="pill" data-val="Je sais pas">Je sais pas</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Révisions faites chez Peugeot ou garage agréé ?</label>
+        <div class="pills" id="revisions">
+          <div class="pill" data-val="Oui, toujours">Oui, toujours</div>
+          <div class="pill" data-val="Parfois">Parfois</div>
+          <div class="pill" data-val="Non, garage indépendant">Non</div>
+          <div class="pill" data-val="Je sais pas">Je sais pas</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Carnet d'entretien / factures disponibles ?</label>
+        <div class="pills" id="carnet">
+          <div class="pill" data-val="Oui, carnet complet">Oui, carnet complet</div>
+          <div class="pill" data-val="Quelques factures">Quelques factures</div>
+          <div class="pill" data-val="Non / perdu">Non / perdu</div>
+        </div>
+        <p class="hint">C'est la pièce clé pour un recours !</p>
+      </div>
+
+      <div class="field">
+        <label>Extension de garantie souscrite ?</label>
+        <div class="pills" id="extension">
+          <div class="pill" data-val="Oui">Oui</div>
+          <div class="pill" data-val="Non">Non</div>
+          <div class="pill" data-val="Je sais pas">Je sais pas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">💬</span>
+      <h2>Infos complémentaires</h2>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Le concessionnaire t'a proposé quoi ?</label>
+        <div class="pills" id="proposition">
+          <div class="pill" data-val="Rien, refus total">Rien, refus total</div>
+          <div class="pill" data-val="Prise en charge partielle">Prise en charge partielle</div>
+          <div class="pill" data-val="En attente de réponse">En attente</div>
+          <div class="pill" data-val="Pas encore contacté">Pas encore contacté</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Autre chose à préciser ?</label>
+        <textarea id="commentaire" placeholder="Contexte, historique, ce que t'a dit le mécanicien..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-section">
+    <button class="submit-btn" onclick="generateResult()">Générer le récapitulatif</button>
+  </div>
+
+  <div class="result-box" id="result-box">
+    <h3>Récapitulatif du dossier</h3>
+    <div id="result-rows"></div>
+    <button class="copy-btn" onclick="copyText()">📋 Copier pour envoyer</button>
+  </div>
+
+  <div class="footer-note">
+    Formulaire créé pour aider à constituer un dossier de recours.<br>
+    Aucune donnée n'est envoyée automatiquement.
+  </div>
+
+</div>
+
+<script>
+  // Multi-select pills
+  document.querySelectorAll('.pills').forEach(group => {
+    const isMulti = group.id === 'symptomes';
+    group.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        if (!isMulti) group.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+        pill.classList.toggle('selected');
+      });
+    });
+  });
+
+  function getSelected(id) {
+    const vals = [...document.querySelectorAll(`#${id} .pill.selected`)].map(p => p.dataset.val);
+    return vals.length ? vals.join(', ') : '—';
+  }
+
+  function generateResult() {
+    const data = [
+      ['Année', document.getElementById('annee').value || '—'],
+      ['Kilométrage', document.getElementById('km').value ? document.getElementById('km').value + ' km' : '—'],
+      ['Motorisation', getSelected('moteur')],
+      ['Achat', getSelected('achat')],
+      ['Symptômes', getSelected('symptomes')],
+      ['Courroie en cause ?', getSelected('courroie')],
+      ['Devis', document.getElementById('devis').value || '—'],
+      ['Garage', document.getElementById('garage').value || '—'],
+      ['Garantie constructeur', getSelected('garantie')],
+      ['Révisions agréées', getSelected('revisions')],
+      ['Carnet / factures', getSelected('carnet')],
+      ['Extension de garantie', getSelected('extension')],
+      ['Proposition concessionnaire', getSelected('proposition')],
+      ['Commentaire', document.getElementById('commentaire').value || '—'],
+    ];
+
+    const rows = data.map(([k, v]) => `
+      <div class="result-row">
+        <span class="result-key">${k}</span>
+        <span class="result-val">${v}</span>
+      </div>`).join('');
+
+    document.getElementById('result-rows').innerHTML = rows;
+    document.getElementById('result-box').style.display = 'block';
+    document.getElementById('result-box').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyText() {
+    const rows = [...document.querySelectorAll('.result-row')];
+    const text = rows.map(r => {
+      const k = r.querySelector('.result-key').textContent.trim();
+      const v = r.querySelector('.result-val').textContent.trim();
+      return `${k} : ${v}`;
+    }).join('\n');
+    const full = `DOSSIER PURETECH – PEUGEOT 2008\n${'─'.repeat(35)}\n${text}`;
+    navigator.clipboard.writeText(full).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copié !';
+      setTimeout(() => btn.textContent = '📋 Copier pour envoyer', 2000);
+    });
+  }
+</script>
+</body>
+</html>
